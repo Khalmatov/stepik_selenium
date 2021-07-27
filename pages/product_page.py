@@ -1,6 +1,5 @@
 import math
 import re
-import time
 
 import pyperclip
 from selenium.common.exceptions import NoAlertPresentException
@@ -20,7 +19,6 @@ class ProductPage(BasePage):
         """Добавляет продукт в корзину"""
         btn = self.browser.find_element(*ProductPageLocators.BTN_ADD_TO_BASKET)
         btn.click()
-        print("Добавил")
 
     def should_be_name(self):
         """Проверяет наличие название продукта"""
@@ -37,7 +35,7 @@ class ProductPage(BasePage):
     def get_product_price(self):
         """Возвращает цену товара"""
         msg = self.browser.find_element(*ProductPageLocators.PRICE).text
-        return  float(re.search(r'\d{2}[\.,]\d{2}', msg).group(0).replace(',','.')) if msg else 0
+        return float(re.search(r'\d{2}[.,]\d{2}', msg).group(0).replace(',', '.')) if msg else 0
 
     def should_be_basket_mini(self):
         """Проверяет наличие суммы цен товаров, добавленных в корзину"""
@@ -47,8 +45,7 @@ class ProductPage(BasePage):
     def get_total_price(self):
         """Возвращает сумму цен товаров, добавленных в корзину"""
         msg = self.browser.find_element(*ProductPageLocators.BASKET_MINI).text
-        return float(re.search(r'\d{2}[\.,]\d{2}', msg).group(0).replace(',','.')) if msg else None if msg else 0
-
+        return float(re.search(r'\d{2}[.,]\d{2}', msg).group(0).replace(',', '.')) if msg else None if msg else 0
 
     def should_be_msg_product_added_to_basket(self):
         """Проверяет наличие сообщения об успешном добавлении товара в корзину"""
@@ -67,12 +64,12 @@ class ProductPage(BasePage):
         """Проверяет отсутствие сообщения об успехе"""
         assert self.is_not_element_present(*ProductPageLocators.SUCCESS_MESSAGE), "Присутствует сообщение об успехе"
 
-
-    def should_dissapear_of_success_message(self):
+    def should_disappear_of_success_message(self):
         """Проверяет, что элемент исчез в искомое время"""
         assert self.is_disappeared(*ProductPageLocators.SUCCESS_MESSAGE), "Сообщение не исчезло"
 
     def solve_quiz_and_get_code(self):
+        """Решает формулу на капче и копирует код в буфер обмена (Ctrl+C)"""
         alert = self.browser.switch_to.alert
         x = alert.text.split(" ")[2]
         answer = str(math.log(abs((12 * math.sin(float(x))))))
@@ -82,13 +79,14 @@ class ProductPage(BasePage):
             alert = self.browser.switch_to.alert
             alert_text = alert.text
             pyperclip.copy(alert_text.split()[-1])
-            print(f"Your code: {alert_text}")
+            print(f"Ваш код: {alert_text}")
             alert.accept()
         except NoAlertPresentException:
-            print("No second alert presented")
+            print("Alert отсутствует")
 
     def should_be_increased_price_basket(self):
+        """Проверяет, что цена в корзине изменилась после добавления продукта в нее"""
         product_price = self.get_product_price()
         total_price = self.get_total_price()
-        assert product_price == total_price, 'Цена корзины и цена продукта не сходятся. Продукт: {}. Корзина: {}'.format(
+        assert product_price == total_price, 'Цена в корзине и цена продукта не сходятся. Продукт: {}. Корзина: {}'.format(
             product_price, total_price)
