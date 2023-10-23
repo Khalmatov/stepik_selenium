@@ -4,8 +4,8 @@ import re
 import pyperclip
 from selenium.common.exceptions import NoAlertPresentException
 
-from stepik_selenium.pages.base_page import BasePage
-from stepik_selenium.pages.locators import ProductPageLocators
+from pages.base_page import BasePage
+from pages.locators import ProductPageLocators
 
 
 class ProductPage(BasePage):

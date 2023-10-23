@@ -1,4 +1,4 @@
-from stepik_selenium.pages.login_page import LoginPage
+from pages.login_page import LoginPage
 
 
 def test_guest_can_login_and_register(browser):
